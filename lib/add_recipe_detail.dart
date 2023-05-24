@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:recipe_app/recipe_service.dart';
 
 class AddRecipeDetail extends StatefulWidget {
@@ -16,26 +12,45 @@ class _AddRecipeDetailState extends State<AddRecipeDetail> {
   final _ingredientsController = TextEditingController();
   final _stepsController = TextEditingController();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  String? _imageUrl;
+  bool _formIsValid = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _nameController.addListener(_validateForm);
+    _ingredientsController.addListener(_validateForm);
+    _stepsController.addListener(_validateForm);
+  }
+
+  void _validateForm() {
+    setState(() {
+      _formIsValid = _formKey.currentState!.validate();
+    });
+  }
 
   addRecipe() async {
-    final sucess = await RecipeService().addRecipe({
-      'Content-Type': 'application/json; charset=UTF-8',
-    }, {
-      'name': _nameController.text,
-      'ingredients': _ingredientsController.text,
-      'steps': _stepsController.text,
-    });
+    if (_formIsValid) {
+      final success = await RecipeService().addRecipe({
+        'Content-Type': 'application/json; charset=UTF-8',
+      }, {
+        'name': _nameController.text,
+        'ingredients': _ingredientsController.text,
+        'steps': _stepsController.text,
+        'image': _imageUrl,
+      });
 
-    if (sucess) {
-      // If the server returns a 200 OK response,
-      ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(
-        SnackBar(
-          content: Text('Recipe added successfully'),
-          backgroundColor: Colors.green,
-        ),
-      );
-    } else {
-      throw Exception('Failed to add recipe');
+      if (success) {
+        ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(
+          SnackBar(
+            content: Text('Recipe added successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        throw Exception('Failed to add recipe');
+      }
     }
   }
 
@@ -54,52 +69,123 @@ class _AddRecipeDetailState extends State<AddRecipeDetail> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                TextFormField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    labelText: "Recipe Name",
+                Card(
+                  color: Colors.grey[300],
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: _nameController,
+                      decoration: InputDecoration(
+                        labelText: "Recipe Name",
+                      ),
+                      validator: (value) {
+                        if (value != null && value.isEmpty) {
+                          return "Please enter a name";
+                        }
+                        return null;
+                      },
+                    ),
                   ),
-                  validator: (value) {
-                    if (value != null && value.isEmpty) {
-                      return "Please enter a name";
-                    }
-                    return null;
-                  },
                 ),
-                TextFormField(
-                  controller: _ingredientsController,
-                  decoration: InputDecoration(
-                    labelText: "Ingredients",
+                Card(
+                  color: Colors.grey[300],
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: _ingredientsController,
+                      decoration: InputDecoration(
+                        labelText: "Ingredients",
+                      ),
+                      validator: (value) {
+                        if (value != null && value.isEmpty) {
+                          return "Please enter ingredients";
+                        }
+                        return null;
+                      },
+                    ),
                   ),
-                  validator: (value) {
-                    if (value != null && value.isEmpty) {
-                      return "Please enter ingredients";
-                    }
-                    return null;
-                  },
                 ),
-                TextFormField(
-                  controller: _stepsController,
-                  decoration: InputDecoration(
-                    labelText: "Steps",
+                Card(
+                  color: Colors.grey[300],
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: _stepsController,
+                      decoration: InputDecoration(
+                        labelText: "Steps",
+                      ),
+                      validator: (value) {
+                        if (value != null && value.isEmpty) {
+                          return "Please enter steps";
+                        }
+                        return null;
+                      },
+                    ),
                   ),
-                  validator: (value) {
-                    if (value != null && value.isEmpty) {
-                      return "Please enter steps";
-                    }
-                    return null;
-                  },
                 ),
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Check if form is valid
-                      if (_formKey.currentState!.validate()) {
-                        addRecipe();
-                      }
-                    },
-                    child: Text("Submit"),
+                SizedBox(height: 20),
+                Center(
+                  child: Container(
+                    width: 200,
+                    height: 200,
+                    child: Card(
+                      child: (_imageUrl != null)
+                          ? Image.network(_imageUrl!)
+                          : Image.asset('assets/placeholder.png'),
+                    ),
+                  ),
+                ),
+                Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        try {
+                          String? newImageUrl = await RecipeService()
+                              .generateImage(_nameController.text);
+                          if (newImageUrl != null) {
+                            setState(() {
+                              _imageUrl = newImageUrl;
+                            });
+                          }
+                        } catch (e) {
+                          print(e); // handle the exception
+                        }
+                      },
+                      child: Text("Update Image"),
+                    ),
+                  ),
+                ),
+                Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _formIsValid
+                            ? Colors.green
+                            : Colors.grey, // Change button color
+                        foregroundColor: Colors.white, // Change text color
+                        minimumSize:
+                            Size(double.infinity, 50), // Change button size
+                        padding:
+                            EdgeInsets.symmetric(vertical: 16.0), // Add padding
+                      ),
+                      onPressed: () {
+                        // Check if form is valid
+                        if (_formKey.currentState!.validate()) {
+                          addRecipe();
+                        }
+                      },
+                      child: Row(
+                        // Add Row
+                        mainAxisAlignment: MainAxisAlignment
+                            .center, // Center the text and icon
+                        children: <Widget>[
+                          Text("Submit"),
+                          Icon(Icons.check), // Add an icon
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ],

@@ -40,7 +40,7 @@ class HomePage extends StatelessWidget {
             ),
           ),
           Positioned(
-            top: 10.0,
+            top: 50.0,
             right: 10.0,
             child: FloatingActionButton(
               onPressed: () {

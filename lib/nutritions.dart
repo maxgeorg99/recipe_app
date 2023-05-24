@@ -56,7 +56,10 @@ class NutritionInfoWidget extends StatelessWidget {
               children: [
                 Icon(iconData, color: color, size: 50),
                 Text(label, style: TextStyle(fontSize: 20, color: color)),
-                Text((value as double).toStringAsFixed(2),
+                Text(
+                    value.runtimeType == int
+                        ? (value as int).toString()
+                        : (value as double).toStringAsFixed(2),
                     style:
                         TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               ],

@@ -22,7 +22,14 @@ class Recipe {
       image: json['image'],
       steps: json['steps'],
       ingredients: json['ingredients'],
-      nutrition: Map<String, dynamic>.from(json['nutrition']),
+      nutrition: json['nutrition'] != null
+          ? Map<String, dynamic>.from(json['nutrition'])
+          : {
+              'Calories': 'unknown',
+              'Protein': 'unknown',
+              'Fat': 'unknown',
+              'Carbs': 'unknown',
+            },
     );
   }
 }
