@@ -40,30 +40,24 @@ class _RecipeListState extends State<RecipeList> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(height: 16.0),
-            Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildRecipeCard(snapshot.data![0]),
-                  _buildRecipeCard(snapshot.data![1]),
-                  _buildRecipeCard(snapshot.data![2]),
-                ],
+            SizedBox(
+              height: 96.0,
+            ), // Add some space above the cards
+            Column(
+              children: snapshot.data!.map((recipe) {
+                return _buildRecipeCard(recipe);
+              }).toList(),
+            ),
+            ElevatedButton(
+              onPressed: _rerollRecipes,
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.all(16.0),
+              ),
+              child: Text(
+                'Reroll Recipes',
+                style: TextStyle(fontSize: 18.0),
               ),
             ),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _rerollRecipes,
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.all(16.0), // Increase button padding
-                ),
-                child: Text(
-                  'Reroll Recipes',
-                  style: TextStyle(fontSize: 18.0), // Increase button font size
-                ),
-              ),
-            )
           ],
         );
       },
@@ -71,62 +65,55 @@ class _RecipeListState extends State<RecipeList> {
   }
 
   Widget _buildRecipeCard(Recipe recipe) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => RecipeDetail(recipe: recipe),
-            ),
-          );
-        },
-        child: Container(
-          margin: EdgeInsets.all(8.0),
-          child: Card(
-            color: Colors.grey[800], // Darker background color
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12.0),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(12.0),
-                        topRight: Radius.circular(12.0),
-                      ),
-                      image: DecorationImage(
-                        image: NetworkImage(recipe.image ?? ''),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RecipeDetail(recipe: recipe),
+          ),
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.all(8.0),
+        child: Card(
+          color: Colors.grey[800],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(12.0),
+                    topRight: Radius.circular(12.0),
+                  ),
+                  image: DecorationImage(
+                    image: NetworkImage(recipe.image ?? ''),
+                    fit: BoxFit.cover,
                   ),
                 ),
-                Expanded(
-                  flex: 1,
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          recipe.name ?? "No Name",
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white, // Set text color to white
-                          ),
-                        ),
-                      ],
+                height: 150.0, // Set a fixed height for the image
+              ),
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      recipe.name ?? "No Name",
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
