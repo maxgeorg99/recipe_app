@@ -24,4 +24,4 @@ Efficiency meets convenience with TastyTrio. Once you've chosen your desired rec
 Unleash Your Inner Chef with TastyTrio:
 Download our app today and embark on a flavorful culinary journey. Experience the joy of discovering, cooking, and savoring your favorite meals with TastyTrio. Elevate your everyday dining experiences and let the delightful aroma of home-cooked goodness fill your kitchen.
 
-Bon appétit!
+Bon appétito!
