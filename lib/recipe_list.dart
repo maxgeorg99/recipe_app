@@ -35,29 +35,43 @@ class _RecipeListState extends State<RecipeList> {
           return Text("Error: ${snapshot.error}");
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
+          return const CircularProgressIndicator();
         }
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(
-              height: 96.0,
-            ), // Add some space above the cards
+            const SizedBox(
+              height: 48.0,
+            ),
             Column(
               children: snapshot.data!.map((recipe) {
                 return _buildRecipeCard(recipe);
               }).toList(),
             ),
-            ElevatedButton(
-              onPressed: _rerollRecipes,
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.all(16.0),
-              ),
-              child: Text(
-                'Reroll Recipes',
-                style: TextStyle(fontSize: 18.0),
-              ),
-            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: ElevatedButton(
+                      onPressed: _rerollRecipes,
+                      child: const Icon(Icons.refresh),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/add');
+                      },
+                      child: const Icon(Icons.add),
+                    ),
+                  ),
+                ),
+              ],
+            )
           ],
         );
       },
@@ -75,7 +89,7 @@ class _RecipeListState extends State<RecipeList> {
         );
       },
       child: Container(
-        margin: EdgeInsets.all(8.0),
+        margin: const EdgeInsets.all(8.0),
         child: Card(
           color: Colors.grey[800],
           shape: RoundedRectangleBorder(
@@ -86,7 +100,7 @@ class _RecipeListState extends State<RecipeList> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(12.0),
                     topRight: Radius.circular(12.0),
                   ),
@@ -98,17 +112,13 @@ class _RecipeListState extends State<RecipeList> {
                 height: 150.0, // Set a fixed height for the image
               ),
               Padding(
-                padding: EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       recipe.name ?? "No Name",
-                      style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ],
                 ),
